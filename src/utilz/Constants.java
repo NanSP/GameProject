@@ -17,12 +17,11 @@ public class Constants {
 		public static final int WALK = 1;
 		public static final int RUNNING = 2;
 		public static final int BACK = 3;
-		public static final int HIT = 4;
-		public static final int JUMP = 5;
-		public static final int FALLING = 6;
-		public static final int GROUND = 7;
-		public static final int ATTACK = 8;
-		public static final int DEAD = 9;
+		public static final int JUMP = 4;
+		public static final int FALLING = 5;
+		public static final int GROUND = 6;
+		public static final int ATTACK = 7;
+		public static final int DEAD = 8;
 		
 		public static int GetSpriteAmount(int player_action) {
 			
@@ -35,14 +34,14 @@ public class Constants {
 				return 8;
 			case IDLE:
 				return 5;
-			case HIT:
-				return 2;
+			case ATTACK:
+				return 6;
 			case JUMP:
 			case FALLING:
 			case GROUND:
 				return 4;
-			case ATTACK:
-				return 6;
+			
+				
 				default:
 					return 1;
 			
