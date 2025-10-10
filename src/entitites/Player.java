@@ -17,7 +17,7 @@ public class Player extends Entity{
 	private int playerAction = IDLE;
 	private boolean moving = false, attacking = false;
 	private boolean  left, right, down, jump;
-	private float playerSpeed = 2.0f;
+	private float playerSpeed = 1.3f * Game.SCALE;
 	private int[][] lvlData;
 	private float xDrawOffSet = 33 * Game.SCALE;
 	private float yDrawOffSet = 17 * Game.SCALE;
@@ -33,7 +33,7 @@ public class Player extends Entity{
 	public Player(float x, float y, int width, int height) {
 		super(x, y, width, height);
 		loadAnimations();
-		initHitbox(x, y, 12 * Game.SCALE, 45 * Game.SCALE);//43
+		initHitbox(x, y, (int)(12 * Game.SCALE),(int)( 45 * Game.SCALE));//43
 	
 	}
 	
