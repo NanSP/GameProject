@@ -1,14 +1,19 @@
 package gameStates;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import entitites.Player;
 import entitites.Player2;
 import levels.LevelManager;
 import main.Game;
 import ui.PauseOverlay;
+import utilz.LoadSave;
+import static utilz.Constants.Enviroment.*;
 
 public class Playing extends State implements StateMethods{
 
@@ -17,10 +22,39 @@ public class Playing extends State implements StateMethods{
 	private LevelManager levelManager;
 	private PauseOverlay  pauseOverlay;
 	private boolean paused = false;
-
+	
+	private int xLvlOffset;
+	private int leftBorder = (int)(0.2 * Game.GAME_WIDTH);//no caso é a altura no nosso jogo não se esqueça
+	private int rightBorder = (int)(0.8 * Game.GAME_WIDTH);
+	private int lvlTilesWide = LoadSave.GetLevelData()[0].length;
+	private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
+	private int maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
+	
+	private BufferedImage backgroundImg1, backgroundImg2, backgroundImg3, backgroundImg4, backgroundImg5, cloudBig, cloudSmall, sun, birds;
+	private int[] cloudSmallPos;
+	private Random rnd = new Random();
+	
 	public Playing(Game game) {
 		super(game);
 		initClasses();
+		iniBackground();
+	
+		cloudBig = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_CLOUD_BIG);
+		cloudSmall = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_CLOUD_SMALL);
+		
+		cloudSmallPos = new int[8];
+		for(int i = 0; i < cloudSmallPos.length; i++)
+			cloudSmallPos[i] = (int)(70 * Game.SCALE) + rnd.nextInt((int)(150 * Game.SCALE));
+	}
+
+	private void iniBackground() {
+		backgroundImg1 = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BACKGROUND_1);
+		backgroundImg2 = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BACKGROUND_2);
+		backgroundImg3 = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BACKGROUND_3);
+		backgroundImg4 = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BACKGROUND_4);
+		backgroundImg5 = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BACKGROUND_5);
+		sun = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_SUN);
+		birds = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BIRDS);
 	}
 
 	private void initClasses() {
@@ -40,20 +74,75 @@ public class Playing extends State implements StateMethods{
 			levelManager.update();
 			player.update();
 			player2.update();
+			checkCloseToBorder();
 		} else {
 			pauseOverlay.update();
 		}
 	}
 
+	private void checkCloseToBorder() {
+		int playerX = (int)player.getHitbox().x;
+		int diff = playerX - xLvlOffset;
+		
+		int player2X = (int)player2.getHitbox().x;
+		int diff2 = player2X - xLvlOffset;
+		
+		if(diff > rightBorder)
+			xLvlOffset += diff - rightBorder;
+		else if(diff < leftBorder)
+			xLvlOffset += diff - leftBorder;
+		
+		if(xLvlOffset > maxLvlOffsetX)
+			xLvlOffset = maxLvlOffsetX;
+		else if(xLvlOffset < 0)
+			xLvlOffset = 0;
+		
+		/*if(diff2 > rightBorder)
+			xLvlOffset += diff2 - rightBorder;
+		else if(diff2 < leftBorder)
+			xLvlOffset += diff2 - leftBorder;
+		
+		if(xLvlOffset > maxLvlOffsetX)
+			xLvlOffset = maxLvlOffsetX;
+		else if(xLvlOffset < 0)
+			xLvlOffset = 0;*/
+	}
+
 	@Override
 	public void draw(Graphics g) {
-		levelManager.draw(g);
-		player.render(g);
-		player2.render(g);
 		
-		if(paused)
+		drawBackgound(g);
+		drawClouds(g);
+		
+		levelManager.draw(g, xLvlOffset);
+		player.render(g, xLvlOffset);
+		player2.render(g, xLvlOffset);
+		
+		if(paused) {
+			g.setColor(new Color(0, 0, 0, 150));
+			g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
+			
 			pauseOverlay.draw(g);
+		}
+	}
+
+	private void drawBackgound(Graphics g) {
+		g.drawImage(backgroundImg1, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+		g.drawImage(birds, 900, 150, (int)(50 * Game.SCALE), (int)(50 * Game.SCALE), null);
+		g.drawImage(backgroundImg2, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+		g.drawImage(backgroundImg3, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+		g.drawImage(sun, 100, 150, (int)(50 * Game.SCALE), (int)(50 * Game.SCALE), null);
+		g.drawImage(backgroundImg4, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+		g.drawImage(backgroundImg5, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+	}
+
+	private void drawClouds(Graphics g) {
 		
+		for(int i = 0; i < 3; i++) 
+			g.drawImage(cloudBig, 0 + i * CLOUD_BIG_WIDTH - (int)(xLvlOffset * 0.3), (int)(10 * Game.SCALE), CLOUD_BIG_WIDTH, CLOUD_BIG_HEIGHT, null);
+		
+		for(int i = 0; i < cloudSmallPos.length; i++)
+			g.drawImage(cloudSmall, CLOUD_SMALL_WIDTH * 4 * i - (int)(xLvlOffset * 0.7), cloudSmallPos[i], CLOUD_SMALL_WIDTH, CLOUD_SMALL_HEIGHT, null);
 	}
 
 	public void mouseDragged(MouseEvent e) {

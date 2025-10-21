@@ -4,6 +4,21 @@ import main.Game;
 
 public class Constants {
 	
+	public static class Enviroment{
+		public static final int CLOUD_BIG_WIDTH_DEFAULT = 348;
+		public static final int CLOUD_BIG_HEIGHT_DEFAULT = 91;
+		
+		public static final int CLOUD_SMALL_WIDTH_DEFAULT = 74;
+		public static final int CLOUD_SMALL_HEIGHT_DEFAULT = 24;
+		
+		
+		public static final int CLOUD_BIG_WIDTH = (int)(CLOUD_BIG_WIDTH_DEFAULT * Game.SCALE);
+		public static final int CLOUD_BIG_HEIGHT = (int)(CLOUD_BIG_HEIGHT_DEFAULT * Game.SCALE);
+		
+		public static final int CLOUD_SMALL_WIDTH = (int)(CLOUD_SMALL_WIDTH_DEFAULT * Game.SCALE);
+		public static final int CLOUD_SMALL_HEIGHT = (int)(CLOUD_SMALL_HEIGHT_DEFAULT * Game.SCALE);
+	}
+	
 	public static class UI{
 		public static class Buttons {
 			public static final int B_WIDHT_DEFAULT = 140;
