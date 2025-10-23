@@ -10,7 +10,7 @@ public abstract class Entity {
 	
 	protected float x, y;
 	protected int width, height;
-	protected Rectangle2D.Float hitbox;
+	public Rectangle2D.Float hitbox;
 	
 	
 	public Entity(float x, float y, int width, int height) {
@@ -22,10 +22,10 @@ public abstract class Entity {
 		
 	}
 	
-	protected void drawHitbox(Graphics g) {
+	protected void drawHitbox(Graphics g, int xLvlOffset) {
 		
 		g.setColor(Color.RED);
-		g.drawRect((int)hitbox.x, (int)hitbox.y, (int)hitbox.width, (int)hitbox.height);
+		g.drawRect((int)hitbox.x - xLvlOffset, (int)hitbox.y, (int)hitbox.width, (int)hitbox.height);
 		
 	}
 	

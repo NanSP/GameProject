@@ -24,17 +24,17 @@ public class Menu extends State implements StateMethods{
 	private void loadBackground() {
 
 		backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
-		menuWidth = (int)(backgroundImg.getWidth() * Game.SCALE);
-		menuHeight = (int)(backgroundImg.getHeight() * Game.SCALE);
+		menuWidth = (int)((backgroundImg.getWidth() * Game.SCALE));
+		menuHeight = (int)((backgroundImg.getHeight() * Game.SCALE));
 		menuX = Game.GAME_WIDTH / 2 - menuWidth / 2;
-		menuY = (int) (45 * Game.SCALE);
+		menuY = (int) (60 * Game.SCALE);
 		
 	}
 
 	private void loadButtons() {
-		buttons[0] = new MenuButton(Game.GAME_WIDTH / 2, (int)(150 * Game.SCALE), 0, GameState.PLAYING);
-		buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, (int)(220 * Game.SCALE), 1, GameState.OPTIONS);
-		buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, (int)(290 * Game.SCALE), 2, GameState.QUIT);
+		buttons[0] = new MenuButton(Game.GAME_WIDTH / 2, (int)(150 * Game.SCALE), 0, GameState.OPTIONS);
+		buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, (int)(220 * Game.SCALE), 1, GameState.QUIT);
+		buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, (int)(290 * Game.SCALE), 2, GameState.PLAYING);
 	}
 
 	@Override
@@ -107,7 +107,6 @@ public class Menu extends State implements StateMethods{
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
