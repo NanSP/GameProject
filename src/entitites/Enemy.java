@@ -4,6 +4,7 @@ import static utilz.HelpMethods.*;
 
 import java.awt.geom.Rectangle2D;
 
+
 import static utilz.Constants.Directions.*;
 
 import main.Game;
@@ -24,6 +25,8 @@ public abstract class Enemy extends Entity{
 	protected int currentHealth;
 	protected boolean active = true;
 	protected boolean attackChecked;
+	protected Game game;
+	
 
 	public Enemy(float x, float y, int width, int height, int enemyType) {
 		super(x, y, width, height);
@@ -138,6 +141,7 @@ public abstract class Enemy extends Entity{
 	
 	public void hurt(int amount) {
 		currentHealth -= amount;
+		
 		if(currentHealth <= 0)
 			newState(DEAD);
 	}

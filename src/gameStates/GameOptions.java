@@ -34,7 +34,8 @@ public class GameOptions extends State implements StateMethods{
 	}
 
 	private void loadImgs() {
-
+		
+		backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BG_MENU);
 		optionsMenu = LoadSave.GetSpriteAtlas(LoadSave.OPTIONS_BG);
 		
 		bgW = (int)(optionsMenu.getWidth() * Game.SCALE);
@@ -54,6 +55,7 @@ public class GameOptions extends State implements StateMethods{
 	@Override
 	public void draw(Graphics g) {
 
+		g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		g.drawImage(optionsMenu, bgX, bgY, bgW, bgH,null);
 		
 		menuB.draw(g);

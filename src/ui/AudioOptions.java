@@ -7,7 +7,7 @@ import static utilz.Constants.UI.VolumeButtons.VOLUME_HEIGHT;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 
-
+import audio.AudioPlayer;
 import main.Game;
 
 public class AudioOptions {
@@ -15,8 +15,10 @@ public class AudioOptions {
 	
 	private SoundButton musicButton, sfxButton;
 	private VolumeButton volumeButton;
+	private Game game;
 	
-	public AudioOptions() {
+	public AudioOptions(Game game) {
+		this.game = game;
 		createSoundButtons();
 		createVolumeButton();
 	}
@@ -54,30 +56,40 @@ public class AudioOptions {
 	
 	public void MouseDragged(MouseEvent e) {
 		if(volumeButton.isMousePressed()) {
+			float valueBefore = volumeButton.getFloatValue();
 			volumeButton.changeX(e.getX());
+			float valueAfter = volumeButton.getFloatValue();
+			if(valueBefore != valueAfter)
+				game.getAudioPlayer().setVolume(valueAfter);
 		}
 	}
 	
 	public void mousePressed(MouseEvent e) {
-		if(isIn(e, musicButton))
+		if(isIn(e, musicButton)) {
+			game.getAudioPlayer().playEffect(AudioPlayer.BUTTONS);
 			musicButton.setMousePressed(true);
-		else if (isIn(e, sfxButton))
+		}
+		else if (isIn(e, sfxButton)) {
+			game.getAudioPlayer().playEffect(AudioPlayer.BUTTONS);
 			sfxButton.setMousePressed(true);
-		else if(isIn(e, volumeButton))
+		}
+		else if(isIn(e, volumeButton)) {
+			game.getAudioPlayer().playEffect(AudioPlayer.BUTTONS);
 			volumeButton.setMousePressed(true);
-		
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
 		if(isIn(e, musicButton)) {
-			if(musicButton.isMousePressed())
+			if(musicButton.isMousePressed()) {
 				musicButton.setMuted(!musicButton.isMuted());
-			
+				game.getAudioPlayer().toggleSongMute();
+			}
 		} else if (isIn(e, sfxButton)) 
-			if(sfxButton.isMousePressed())
+			if(sfxButton.isMousePressed()) {
 				sfxButton.setMuted(!sfxButton.isMuted());
-		
-		
+				game.getAudioPlayer().toggleEffectMute();
+			}
 		musicButton.resetBools();
 		sfxButton.resetBools();
 		volumeButton.resetBools();

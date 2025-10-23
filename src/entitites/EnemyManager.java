@@ -53,6 +53,7 @@ public class EnemyManager {
 	public void checkEnemyHit(Rectangle2D.Float attackBox) {
 		for(Slime s : slimes)
 			if(s.isActive())
+				if(s.currentHealth > 0)
 				if(attackBox.intersects(s.getHitbox())) {
 					s.hurt(10);
 					return;

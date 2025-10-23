@@ -37,7 +37,8 @@ public class Playing extends State implements StateMethods{
 	private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
 	private int maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
 	
-	private BufferedImage backgroundImg1, backgroundImg2, backgroundImg3, backgroundImg4, backgroundImg5, cloudBig, cloudSmall, sun, birds;
+	private BufferedImage backgroundImg1, backgroundImg2, backgroundImg3, backgroundImg4, backgroundImg5, 
+							cloudBig, cloudSmall, sun, birds;
 	private int[] cloudSmallPos;
 	private Random rnd = new Random();
 	private boolean gameOver;
@@ -71,7 +72,7 @@ public class Playing extends State implements StateMethods{
 		
 		levelManager = new LevelManager(game);
 		enemyManager = new EnemyManager(this);
-		player = new Player(450, 100,(int)(80 * Game.SCALE),(int)(64 * Game.SCALE), this);
+		player = new Player(450, 200,(int)(80 * Game.SCALE),(int)(64 * Game.SCALE), this);
 		player2 = new Player2(1220, 200,(int)(80 * Game.SCALE),(int)(64 * Game.SCALE), this);
 		player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
 		player2.loadLvlData(levelManager.getCurrentLevel().getLevelData());
@@ -354,6 +355,10 @@ public class Playing extends State implements StateMethods{
 
 	public void setPlayerDying(boolean playerDying) {
 		this.playerDying = playerDying;
+	}
+
+	public LevelManager getLevelManager() {
+		return levelManager;
 	}
 	
 }

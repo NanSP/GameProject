@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import audio.AudioPlayer;
 import gameStates.Playing;
 import main.Game;
 import utilz.LoadSave;
@@ -64,6 +65,7 @@ public class Player extends Entity{
 	
 	private void initAttackBox() {
 		attackBox = new Rectangle2D.Float(x, y, (int)(30 * Game.SCALE), (int)(30 * Game.SCALE));
+		resetAttackBox();
 	}
 
 	public void update() {
@@ -75,8 +77,11 @@ public class Player extends Entity{
 				aniTick = 0;
 				aniIndex = 0;
 				playing.setPlayerDying(true);
+				playing.getGame().getAudioPlayer().playEffect(AudioPlayer.DIE);
 			} else if(aniIndex == GetSpriteAmount(DEAD) - 1 && aniTick >= aniSpeed - 1) {
 				playing.setGameOver(true);
+				playing.getGame().getAudioPlayer().stopSong();
+				playing.getGame().getAudioPlayer().playEffect(AudioPlayer.GAMEOVER);
 			} else
 				updateAnimationTick();
 			
@@ -93,7 +98,13 @@ public class Player extends Entity{
 	
 
 	private void updateAttackBox() {
-		if(right) {
+		if(right && left) {
+			if(flipW == 1) {
+				attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10); 
+			}else {
+				attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 10);
+			}
+		}else if(right) {
 			attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10);
 		}else if(left) {
 			attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 20);
@@ -237,6 +248,7 @@ public class Player extends Entity{
 		
 		if(inAir)
 			return;
+		playing.getGame().getAudioPlayer().playEffect(AudioPlayer.JUMP);
 		inAir = true;
 		airSpeed = jumpSpeed;
 		
@@ -353,14 +365,25 @@ public class Player extends Entity{
 		inAir = false;
 		attacking = false;
 		moving = false;
+		airSpeed = 0f;
 		playerAction = IDLE;
 		currentHealth = maxHealth;
 		
 		hitbox.x = x;
 		hitbox.y = y;
 		
+		resetAttackBox();
+		
 		if(!IsEntityOnFloor(hitbox, lvlData))
 			inAir = true;
+	}
+	
+	private void resetAttackBox() {
+		if(flipW == 1) {
+			attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10); 
+		}else {
+			attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 10);
+		}
 	}
 	
 	private void checkAttack() {
@@ -370,6 +393,7 @@ public class Player extends Entity{
 	    
 	    playing.checkEnemyHit(attackBox);
 	    playing.checkPlayerHitPlayerI(attackBox, playing.getPlayer2());
+	    playing.getGame().getAudioPlayer().playAttackSound();
 	}
 }
 

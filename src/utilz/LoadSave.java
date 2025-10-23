@@ -41,6 +41,8 @@ public class LoadSave {
 	public static final String YELLOW_BAR = "yellowbar.png";
 	public static final String DUEL_COMPLETED = "endGame1.png";
 	public static final String OPTIONS_BG = "opcoes1.png";
+	public static final String BG_MENU = "bgMenu.png";
+
 	
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		

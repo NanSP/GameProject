@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import audio.AudioPlayer;
 import main.Game;
 import ui.MenuButton;
 import utilz.LoadSave;
@@ -12,7 +13,7 @@ import utilz.LoadSave;
 public class Menu extends State implements StateMethods{
 	
 	private MenuButton[] buttons = new MenuButton[3];
-	private BufferedImage backgroundImg;
+	private BufferedImage backgroundImg, bgMenu;
 	private int menuX, menuY, menuWidth, menuHeight;
 
 	public Menu(Game game) {
@@ -23,6 +24,7 @@ public class Menu extends State implements StateMethods{
 
 	private void loadBackground() {
 
+		bgMenu = LoadSave.GetSpriteAtlas(LoadSave.BG_MENU);
 		backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
 		menuWidth = (int)((backgroundImg.getWidth() * Game.SCALE));
 		menuHeight = (int)((backgroundImg.getHeight() * Game.SCALE));
@@ -46,6 +48,7 @@ public class Menu extends State implements StateMethods{
 	@Override
 	public void draw(Graphics g) {
 		
+		g.drawImage(bgMenu, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		g.drawImage(backgroundImg, menuX, menuY,menuWidth, menuHeight, null);
 		
 		for(MenuButton mb : buttons)
@@ -62,6 +65,7 @@ public class Menu extends State implements StateMethods{
 		for(MenuButton mb : buttons) {
 			if(isIn(e,mb)) {
 				mb.setMousePressed(true);
+				game.getAudioPlayer().playEffect(AudioPlayer.BUTTONS);
 				break;
 			}
 		}
@@ -74,6 +78,8 @@ public class Menu extends State implements StateMethods{
 			if(isIn(e,mb)) {
 				if(mb.isMousePressed())
 					mb.applyGameState();
+				if(mb.getState() == GameState.PLAYING)
+					game.getAudioPlayer().setLevelSong(game.getPlaying().getLevelManager().getLevelIndex());
 				break;
 			}
 		}

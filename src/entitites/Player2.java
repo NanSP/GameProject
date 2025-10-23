@@ -8,13 +8,13 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import audio.AudioPlayer;
 import gameStates.Playing;
 import main.Game;
 import utilz.LoadSave;
 
-
 public class Player2 extends Entity{
-	
+
 	private BufferedImage[][] animations;
 	private int aniTick, aniIndex, aniSpeed = 30;
 	private int playerAction = IDLE;
@@ -43,7 +43,7 @@ public class Player2 extends Entity{
 	private int healthBarHeight = (int)(6 * Game.SCALE);
 	private int healthBarXStart = (int)(4 * Game.SCALE);
 	private int healthBarYStart = (int)(54 * Game.SCALE);
-	
+
 	private int maxHealth = 100;
 	private int currentHealth = maxHealth;
 	private int healthWidth = healthBarWidth;
@@ -55,7 +55,6 @@ public class Player2 extends Entity{
 	private boolean attackChecked;
 	private Playing playing;
 	
-	
 	public Player2(float x, float y, int width, int height, Playing playing) {
 		super(x, y, width, height);
 		this.playing = playing;
@@ -65,7 +64,8 @@ public class Player2 extends Entity{
 	}
 	
 	private void initAttackBox() {
-		attackBox = new Rectangle2D.Float(x, y, (int)(30 * Game.SCALE), (int)(30 * Game.SCALE));		
+		attackBox = new Rectangle2D.Float(x, y, (int)(30 * Game.SCALE), (int)(30 * Game.SCALE));
+		resetAttackBox();
 	}
 
 	public void update() {
@@ -77,8 +77,11 @@ public class Player2 extends Entity{
 				aniTick = 0;
 				aniIndex = 0;
 				playing.setPlayerDying(true);
+				playing.getGame().getAudioPlayer().playEffect(AudioPlayer.DIE);
 			} else if(aniIndex == GetSpriteAmount(DEAD) - 1 && aniTick >= aniSpeed - 1) {
 				playing.setGameOver(true);
+				playing.getGame().getAudioPlayer().stopSong();
+				playing.getGame().getAudioPlayer().playEffect(AudioPlayer.GAMEOVER);
 			} else
 				updateAnimationTick();
 			
@@ -93,8 +96,15 @@ public class Player2 extends Entity{
 		setAnimation();
 	}
 	
+
 	private void updateAttackBox() {
-		if(right) {
+		if(right && left) {
+			if(flipW == 1) {
+				attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10); 
+			}else {
+				attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 10);
+			}
+		}else if(right) {
 			attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10);
 		}else if(left) {
 			attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 20);
@@ -106,7 +116,7 @@ public class Player2 extends Entity{
 		
 		healthWidth = (int)((currentHealth / (float)maxHealth) * healthBarWidth);
 	}
-	
+
 	public void render(Graphics g, int xLvlOffset) {
 		
 		g.drawImage(animations[playerAction][aniIndex], (int)(hitbox.x - xDrawOffSet) - xLvlOffset + flipX, (int)(hitbox.y - yDrawOffSet), width * flipW, height, null);
@@ -115,11 +125,12 @@ public class Player2 extends Entity{
 		drawUI(g);
 	}
 	
+
 	private void drawAttackBox(Graphics g, int xLvlOffset) {
 		g.setColor(Color.blue);
 		g.drawRect((int)attackBox.x - xLvlOffset, (int)attackBox.y, (int)attackBox.width, (int)attackBox.height);
 	}
-	
+
 	private void drawUI(Graphics g) {
 		
 		g.setColor(Color.red);
@@ -129,7 +140,7 @@ public class Player2 extends Entity{
 		g.drawImage(yellowBarImg, (int)(724 * Game.SCALE), (int)(57 * Game.SCALE), (int)(32 * Game.SCALE), (int)(5 * Game.SCALE), null);
 		g.drawImage(statusBarImg, hpBarX, hpBarY, hpBarWidth, hpBarHeight, null);
 	}
-	
+
 	private void updateAnimationTick() {
 		
 		aniTick++;
@@ -169,6 +180,7 @@ public class Player2 extends Entity{
 				aniTick = 0;
 				return;
 			}
+				
 		} else {
 			aniSpeed = 30;
 		}
@@ -183,7 +195,7 @@ public class Player2 extends Entity{
 		
 	}
 
-	private void updatePos() {
+private void updatePos() {
 		
 		moving = false;
 		
@@ -200,11 +212,13 @@ public class Player2 extends Entity{
 			xSpeed -= playerSpeed;
 			flipX = 0;
 			flipW = 1;
+			
 		}
 		if (right) {
 			xSpeed += playerSpeed;
 			flipX = width;
 			flipW = -1;
+			
 		}
 		
 		if(!inAir)
@@ -230,12 +244,14 @@ public class Player2 extends Entity{
 		} else 
 			updateXPos(xSpeed);
 		moving = true;
+	
 	}
 	
 	private void jump() {
 		
 		if(inAir)
 			return;
+		playing.getGame().getAudioPlayer().playEffect(AudioPlayer.JUMP);
 		inAir = true;
 		airSpeed = jumpSpeed;
 		
@@ -270,17 +286,17 @@ public class Player2 extends Entity{
 
 	private void loadAnimations() {
 		
-			BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.PLAYER2_ATLAS);
-			
-			animations =new BufferedImage[9][8];
-			
-			for(int j = 0; j < animations.length; j++) 
-				 for(int i = 0; i < animations[j].length; i++)
-					 animations[j][i] = img.getSubimage(i*80, j*64, 80, 64);
+		BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.PLAYER2_ATLAS);
 		
-			statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.HP2_SPRITE);
-			redBarImg = LoadSave.GetSpriteAtlas(LoadSave.REDBAR2);
-			yellowBarImg = LoadSave.GetSpriteAtlas(LoadSave.YELLOW_BAR);
+		animations =new BufferedImage[9][8];
+		
+		for(int j = 0; j < animations.length; j++) 
+			 for(int i = 0; i < animations[j].length; i++)
+				 animations[j][i] = img.getSubimage(i*80, j*64, 80, 64);
+	
+		statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.HP2_SPRITE);
+		redBarImg = LoadSave.GetSpriteAtlas(LoadSave.REDBAR2);
+		yellowBarImg = LoadSave.GetSpriteAtlas(LoadSave.YELLOW_BAR);
 	}
 	
 	public void loadLvlData(int[][] lvlData) {
@@ -352,14 +368,25 @@ public class Player2 extends Entity{
 		inAir = false;
 		attacking = false;
 		moving = false;
+		airSpeed = 0f;
 		playerAction = IDLE;
 		currentHealth = maxHealth;
 		
 		hitbox.x = x;
 		hitbox.y = y;
 		
+		resetAttackBox();
+		
 		if(!IsEntityOnFloor(hitbox, lvlData))
 			inAir = true;
+	}
+	
+	private void resetAttackBox() {
+		if(flipW == 1) {
+			attackBox.x = hitbox.x + hitbox.width + (int)(Game.SCALE * 10); 
+		}else {
+			attackBox.x = hitbox.x - hitbox.width - (int)(Game.SCALE * 10);
+		}
 	}
 	
 	private void checkAttack() {
@@ -369,8 +396,6 @@ public class Player2 extends Entity{
 	    
 	    playing.checkEnemyHit(attackBox);
 	    playing.checkPlayerHitPlayer(attackBox, playing.getPlayer());
+	    playing.getGame().getAudioPlayer().playAttackSound();
 	}
-	
 }
-
-

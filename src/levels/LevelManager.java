@@ -10,7 +10,8 @@ public class LevelManager {
 
 	private Game game;
 	private BufferedImage[] levelSprite;
-	private Level levelOne;
+	public Level levelOne;
+	public int lvlIndex = 1;
 	
 	public LevelManager(Game game) {
 		this.game = game;
@@ -46,4 +47,7 @@ public class LevelManager {
 		return levelOne;
 	}
 	
+	public int getLevelIndex() {
+		return lvlIndex;
+	}
 }
